@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+}
+
+group 'me.sunstorm'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.jetbrains:annotations:16.0.1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+}
+
+shadowJar {
+    archiveClassifier.set('')
+}
+
+jar.enabled = false
+assemble.dependsOn(shadowJar)
