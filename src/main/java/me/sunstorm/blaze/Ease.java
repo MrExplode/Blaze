@@ -23,9 +23,9 @@ import lombok.AllArgsConstructor;
 import java.util.function.Function;
 
 import static java.lang.Math.PI;
-import static net.jafama.FastMath.sin;
-import static net.jafama.FastMath.cos;
-import static net.jafama.FastMath.pow;
+import static java.lang.Math.sin;
+import static java.lang.Math.cos;
+import static java.lang.Math.pow;
 
 @AllArgsConstructor
 public enum Ease {
@@ -70,7 +70,9 @@ public enum Ease {
     }),
     ELASTIC_IN_OUT(x -> {
         double c5 = (2 * Math.PI) / 4.5;
-        return x == 0 ? 0 : x == 1 ? 1 : x < 0.5 ? -(pow(2, 20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2 : (pow(2, -20 * x + 10) * sin((20 * x - 11.125) * c5)) / 2 + 1;
+        double sin = sin((20 * x - 11.125) * c5);
+
+        return x == 0 ? 0 : x == 1 ? 1 : x < 0.5 ? -(pow(2, 20 * x - 10) * sin) / 2 : (pow(2, -20 * x + 10) * sin) / 2 + 1;
     }),
 
 
