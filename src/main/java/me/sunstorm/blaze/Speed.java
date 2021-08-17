@@ -18,16 +18,9 @@
 
 package me.sunstorm.blaze;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-@Getter
-@AllArgsConstructor
-public enum Speed {
-    SLOW(0.05),
-    MEDIUM(0.1),
-    FAST(0.15),
-    FASTER(0.2);
-
-    private final double value;
+public class Speed {
+    public static final double SLOW = 0.05;
+    public static final double MEDIUM = 0.1;
+    public static final double FAST = 0.15;
+    public static final double FASTER = 0.2;
 }

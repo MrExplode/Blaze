@@ -76,19 +76,11 @@ public class Animator {
      * Creates an {@link Animation} with the specified ease, {@link RunType#FIRE_ONCE} and {@link Speed#MEDIUM}
      */
     public Animation create(Ease ease) {
-        return create(ease, null, RunType.FIRE_ONCE, 0, Speed.MEDIUM.getValue());
-    }
-
-    public Animation create(Ease ease, RunType type, Speed speed) {
-        return create(ease, null, type, 0, speed.getValue());
+        return create(ease, null, RunType.FIRE_ONCE, 0, Speed.MEDIUM);
     }
 
     public Animation create(Ease ease, RunType type, double speed) {
         return create(ease, null, type, 0, speed);
-    }
-
-    public Animation create(Ease ease, Ease backwardEase, RunType type, Speed speed) {
-        return create(ease, backwardEase, type, 0, speed.getValue());
     }
 
     public Animation create(Ease ease, Ease backwardEase, RunType type, double speed) {
