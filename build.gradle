@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains:annotations:16.0.1'
+    implementation 'org.jetbrains:annotations:22.0.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
