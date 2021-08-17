@@ -22,10 +22,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.function.Function;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.sin;
-import static java.lang.Math.cos;
-import static java.lang.Math.pow;
+import static java.lang.Math.*;
 
 @AllArgsConstructor
 public enum Ease {
@@ -75,7 +72,6 @@ public enum Ease {
         return x == 0 ? 0 : x == 1 ? 1 : x < 0.5 ? -(pow(2, 20 * x - 10) * sin) / 2 : (pow(2, -20 * x + 10) * sin) / 2 + 1;
     }),
 
-
     EXP_IN(x -> x == 0 ? 0 : pow(2, 10 * x - 10)),
     EXP_OUT(x -> x == 1 ? 1 : 1 - pow(2, -10 * x)),
     EXP_IN_OUT(x -> x == 0 ? 0 : x == 1 ? 1 : x < 0.5 ? pow(2, 20 * x - 10) / 2 : (2 - pow(2, -20 * x + 10)) / 2),
@@ -95,8 +91,8 @@ public enum Ease {
     }),
     BOUNCE_IN(x -> 1 - BOUNCE_OUT.calc(1 - x)),
     BOUNCE_IN_OUT(x -> x < 0.5
-            ? (1 - BOUNCE_OUT.calc(1 - 2 * x)) / 2
-            : (1 + BOUNCE_OUT.calc(2 * x - 1)) / 2);
+        ? (1 - BOUNCE_OUT.calc(1 - 2 * x)) / 2
+        : (1 + BOUNCE_OUT.calc(2 * x - 1)) / 2);
 
     private final Function<Double, Double> expression;
 
