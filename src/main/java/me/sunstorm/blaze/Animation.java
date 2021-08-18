@@ -61,7 +61,10 @@ public class Animation {
     }
 
     /**
-     * TODO
+     * Sets the {@link Runnable} to be run when the animation completes.
+     * Only applicable when the {@link RunType} is {@link RunType#FIRE_ONCE}.
+     *
+     * Note that this is ran on the thread where {@link Animator#update} is called.
      */
     public Animation onFinish(Runnable r) {
         if (runType != RunType.FIRE_ONCE) {
@@ -100,7 +103,7 @@ public class Animation {
     /**
      * Stops the animation.
      *
-     * @implNote this doesn't reset the progress of this animation.
+     * this doesn't reset the progress of this animation.
      */
     public void stop() {
         running = false;
