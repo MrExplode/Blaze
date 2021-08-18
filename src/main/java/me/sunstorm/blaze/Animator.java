@@ -24,8 +24,12 @@ import lombok.Getter;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Holds all the animations and handles the ticking of them.
+ */
 public class Animator {
-    @Getter(AccessLevel.PROTECTED) private final Set<Animation> animations = ConcurrentHashMap.newKeySet();
+    @Getter(AccessLevel.PROTECTED)
+    private final Set<Animation> animations = ConcurrentHashMap.newKeySet();
 
     /**
      * Updates all active animations. Should be called every tick.
@@ -38,34 +42,19 @@ public class Animator {
                 animations.remove(animation);
                 continue;
             }
-            if (animation.getRunType() == RunType.FIRE_ONCE && animation.getProgress() == 1) {
-                animation.setRunning(false);
-                animation.setFinished(true);
-                if (animation.getOnFinish() != null)
-                    animation.getOnFinish().run();
-                animations.remove(animation);
-            }
 
-            if (animation.getRunType() == RunType.LOOP && animation.getProgress() == 1)
-                animation.setProgress(0);
+            animation.getRunType().tick(animation);
 
-            if (animation.getRunType() == RunType.BOUNCE) {
-                if (animation.getProgress() == 1)
-                    animation.setForward(false);
-                else if (animation.getProgress() == 0)
-                    animation.setForward(true);
-            }
-
-            if (animation.isForward())
+            if (animation.isGoingForward()) {
                 animation.setProgress(Math.min(1, animation.getProgress() + partialTicks * animation.getMultiplier()));
-            else
+            } else {
                 animation.setProgress(Math.max(0, animation.getProgress() - partialTicks * animation.getMultiplier()));
+            }
 
-            Ease selectedEase;
-            if (animation.getBackwardEase() == null || animation.isForward())
-                selectedEase = animation.getEase();
-            else
+            Ease selectedEase = animation.getEase();
+            if (animation.getBackwardEase() != null && !animation.isGoingForward()) {
                 selectedEase = animation.getBackwardEase();
+            }
 
             animation.setValue(selectedEase.calc(animation.getProgress()));
             animation.setInverse(1 - animation.getValue());
@@ -73,28 +62,48 @@ public class Animator {
     }
 
     /**
-     * Creates an {@link Animation} with the specified ease, {@link RunType#FIRE_ONCE} and {@link Speed#MEDIUM}
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease the ease of the animation
+     * @return the created animation
      */
     public Animation create(Ease ease) {
-        return create(ease, null, RunType.FIRE_ONCE, 0, Speed.MEDIUM);
+        return create(ease, RunType.FIRE_ONCE, Speed.MEDIUM);
     }
 
+    /**
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease  the ease of the animation
+     * @param type  the type of this animation
+     * @param speed the speed of this animation
+     * @return the created animation
+     */
     public Animation create(Ease ease, RunType type, double speed) {
         return create(ease, null, type, 0, speed);
     }
 
+    /**
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease         the ease of the animation
+     * @param backwardEase the ease of this animation when the animation is going backwards
+     * @param type         the type of this animation
+     * @param speed        the speed of this animation
+     * @return the created animation
+     */
     public Animation create(Ease ease, Ease backwardEase, RunType type, double speed) {
         return create(ease, backwardEase, type, 0, speed);
     }
 
     /**
-     * Creates an {@link Animation} with the specified parameters
+     * Creates an {@link Animation animation} with the given parameters.
      *
-     * @param ease type that's used when the animation is going forward
-     * @param backwardEase ease type that's used when the animation is going backward
-     * @param type run type
-     * @param startValue starting point of the animation
-     * @param speed speed of the animation
+     * @param ease         the ease of the animation
+     * @param backwardEase the ease of this animation when the animation is going backwards
+     * @param type         the type of this animation
+     * @param startValue   the starting value of this animation
+     * @param speed        the speed of this animation
      */
     public Animation create(Ease ease, Ease backwardEase, RunType type, double startValue, double speed) {
         return new Animation(this, ease, backwardEase, type, startValue, speed);

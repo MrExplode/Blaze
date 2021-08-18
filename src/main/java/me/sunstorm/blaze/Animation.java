@@ -18,36 +18,40 @@
 
 package me.sunstorm.blaze;
 
-import static lombok.AccessLevel.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Represents an animation
+ * Represents an animation.
  */
 @Getter
+@Setter(AccessLevel.PROTECTED)
 public class Animation {
-    @Getter(NONE) private final Animator animator;
+    @Getter(AccessLevel.NONE)
+    private final Animator animator;
+
     private final Ease ease;
-    @Nullable private final Ease backwardEase;
+    private final Ease backwardEase;
     private final RunType runType;
     private final double multiplier;
 
-    @Nullable
     private Runnable onFinish;
 
-    //the animation value
-    @Setter(PROTECTED) private double value;
-    //inverse of the animation value. might come handy when making centre out scaling animations
-    @Setter(PROTECTED) private double inverse;
-    @Setter(PROTECTED) private double progress;
-    @Setter(PROTECTED) @Getter(PROTECTED) private boolean forward = true;
-    @Setter(PROTECTED) private boolean running = false;
-    @Setter(PROTECTED) private boolean finished = false;
+    private double value; //the animation value (0-1)
+    private double progress; // the progress (0-1)
+    private double inverse; //inverse of the animation value. might come handy when making centre out scaling animations (0-1)
 
-    protected Animation(Animator animator, Ease ease, @Nullable Ease backwardEase, RunType runType, double startValue, double multiplier) {
-        if (startValue < 0 || startValue > 1) throw new IllegalArgumentException("Invalid start value " + startValue);
+    private Direction direction = Direction.FORWARD;
+    private boolean running = false;
+
+    protected Animation(@NotNull Animator animator, @NotNull Ease ease, @Nullable Ease backwardEase, @NotNull RunType runType, double startValue, double multiplier) {
+        if (startValue < 0 || startValue > 1) {
+            throw new IllegalArgumentException("Invalid start value " + startValue);
+        }
+
         this.animator = animator;
         this.ease = ease;
         this.backwardEase = backwardEase;
@@ -57,20 +61,55 @@ public class Animation {
         this.multiplier = multiplier;
     }
 
+    /**
+     * TODO
+     */
     public Animation onFinish(Runnable r) {
+        if (runType != RunType.FIRE_ONCE) {
+            throw new IllegalStateException("can't set onFinish while the animation's runType is not RunType.FIRE_ONCE");
+        }
         this.onFinish = r;
         return this;
     }
 
+    /**
+     * Returns the remaining value of this animation.
+     *
+     * @return the remaining value
+     */
+    public double getRemaining() {
+        return 1 - value;
+    }
+
+    /**
+     * Returns if the animation is going forward.
+     *
+     * @return true if the animation is going forward, false otherwise
+     */
+    public boolean isGoingForward() {
+        return direction == Direction.FORWARD;
+    }
+
+    /**
+     * Starts the animation.
+     */
     public void start() {
         animator.getAnimations().add(this);
         running = true;
     }
 
+    /**
+     * Stops the animation.
+     *
+     * @implNote this doesn't reset the progress of this animation.
+     */
     public void stop() {
         running = false;
     }
 
+    /**
+     * Resets the progress of this animation.
+     */
     public void reset() {
         progress = 0;
     }
