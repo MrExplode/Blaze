@@ -22,10 +22,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.function.Function;
 
-import static java.lang.Math.PI;
-import static net.jafama.FastMath.sin;
-import static net.jafama.FastMath.cos;
-import static net.jafama.FastMath.pow;
+import static java.lang.Math.*;
 
 @AllArgsConstructor
 public enum Ease {
@@ -70,9 +67,10 @@ public enum Ease {
     }),
     ELASTIC_IN_OUT(x -> {
         double c5 = (2 * Math.PI) / 4.5;
-        return x == 0 ? 0 : x == 1 ? 1 : x < 0.5 ? -(pow(2, 20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2 : (pow(2, -20 * x + 10) * sin((20 * x - 11.125) * c5)) / 2 + 1;
-    }),
+        double sin = sin((20 * x - 11.125) * c5);
 
+        return x == 0 ? 0 : x == 1 ? 1 : x < 0.5 ? -(pow(2, 20 * x - 10) * sin) / 2 : (pow(2, -20 * x + 10) * sin) / 2 + 1;
+    }),
 
     EXP_IN(x -> x == 0 ? 0 : pow(2, 10 * x - 10)),
     EXP_OUT(x -> x == 1 ? 1 : 1 - pow(2, -10 * x)),
@@ -93,8 +91,8 @@ public enum Ease {
     }),
     BOUNCE_IN(x -> 1 - BOUNCE_OUT.calc(1 - x)),
     BOUNCE_IN_OUT(x -> x < 0.5
-            ? (1 - BOUNCE_OUT.calc(1 - 2 * x)) / 2
-            : (1 + BOUNCE_OUT.calc(2 * x - 1)) / 2);
+        ? (1 - BOUNCE_OUT.calc(1 - 2 * x)) / 2
+        : (1 + BOUNCE_OUT.calc(2 * x - 1)) / 2);
 
     private final Function<Double, Double> expression;
 

@@ -18,19 +18,55 @@
 
 package me.sunstorm.blaze;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum RunType {
     /**
-     * The {@link Animation} loops until it's stopped.
+     * The {@link Animation animation} plays once and stops.
      */
-    LOOP,
+    FIRE_ONCE {
+        @Override
+        public void tick(@NotNull Animation animation) {
+            if (animation.getProgress() == 1) {
+                animation.setRunning(false);
+
+                if (animation.getOnFinish() != null) {
+                    animation.getOnFinish().run();
+                }
+            }
+        }
+    },
 
     /**
-     * The {@link Animation} plays once and stops.
+     * The {@link Animation animation} loops until it's stopped.
      */
-    FIRE_ONCE,
+    LOOP {
+        @Override
+        public void tick(@NotNull Animation animation) {
+            if (animation.getProgress() == 1) {
+                animation.reset();
+            }
+        }
+    },
 
     /**
-     * The {@link Animation} plays back and forth until it's stopped.
+     * The {@link Animation animation} plays back and forth until it's stopped.
      */
-    BOUNCE
+    BOUNCE {
+        @Override
+        public void tick(@NotNull Animation animation) {
+            if (animation.getProgress() == 1) {
+                animation.setDirection(Direction.BACKWARD);
+            } else if (animation.getProgress() == 0) {
+                animation.setDirection(Direction.FORWARD);
+            }
+        }
+    };
+
+    /**
+     * Ticks the animation.
+     *
+     * @param animation the animation
+     */
+    public abstract void tick(@NotNull Animation animation);
 }
