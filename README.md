@@ -12,7 +12,7 @@ Maven:
 <dependency>
     <groupId>com.github.MrExplode</groupId>
     <artifactId>Blaze</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 </dependency>
 ```
 Gradle:
@@ -22,7 +22,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.MrExplode:Blaze:1.0.1-SNAPSHOT'
+    implementation 'com.github.MrExplode:Blaze:1.0.2-SNAPSHOT'
 }
 ```
 
