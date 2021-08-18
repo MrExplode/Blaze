@@ -1,4 +1,4 @@
-# Blaze
+# Blaze [![Release](https://jitpack.io/v/MrExplode/Blaze.svg)](https://jitpack.io/#MrExplode/Blaze)
 Lightweight animation library made mainly for OpenGL usage
 
 ## Installation
