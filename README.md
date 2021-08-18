@@ -16,7 +16,7 @@ Maven:
 </dependency>
 ```
 Gradle:
-```
+```groovy
 repositories {
     maven { url 'https://jitpack.io' }
 }
