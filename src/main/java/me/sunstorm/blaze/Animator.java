@@ -57,7 +57,6 @@ public class Animator {
             }
 
             animation.setValue(selectedEase.calc(animation.getProgress()));
-            animation.setInverse(1 - animation.getValue());
         }
     }
 

@@ -42,7 +42,6 @@ public class Animation {
 
     private double value; //the animation value (0-1)
     private double progress; // the progress (0-1)
-    private double inverse; //inverse of the animation value. might come handy when making centre out scaling animations (0-1)
 
     private Direction direction = Direction.FORWARD;
     private boolean running = false;
