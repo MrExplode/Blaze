@@ -18,9 +18,6 @@
 
 package me.sunstorm.blaze;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,7 +25,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Holds all the animations and handles the ticking of them.
  */
 public class Animator {
-    @Getter(AccessLevel.PROTECTED)
     private final Set<Animation> animations = ConcurrentHashMap.newKeySet();
 
     /**
@@ -38,73 +34,40 @@ public class Animator {
      */
     public void update(float partialTicks) {
         for (Animation animation : animations) {
-            if (!animation.isRunning()) {
+            if (animation.paused()) {
+                continue;
+            }
+
+            if (animation.type().tick(animation)) {
                 animations.remove(animation);
                 continue;
             }
 
-            animation.getRunType().tick(animation);
+            double progress = animation.type().getProgress(animation, partialTicks);
+            animation.progress(progress);
 
-            if (animation.isGoingForward()) {
-                animation.setProgress(Math.min(1, animation.getProgress() + partialTicks * animation.getMultiplier()));
-            } else {
-                animation.setProgress(Math.max(0, animation.getProgress() - partialTicks * animation.getMultiplier()));
-            }
-
-            Ease selectedEase = animation.getEase();
-            if (animation.getBackwardEase() != null && !animation.isGoingForward()) {
-                selectedEase = animation.getBackwardEase();
-            }
-
-            animation.setValue(selectedEase.calc(animation.getProgress()));
+            double value = animation.type().getValue(animation);
+            animation.value(value);
         }
     }
 
     /**
-     * Creates an {@link Animation animation} with the given parameters.
+     * Removes the given animation from the animation queue.
      *
-     * @param ease the ease of the animation
-     * @return the created animation
+     * @param animation the animation
+     * @return true if the removal was successful, false otherwise
      */
-    public Animation create(Ease ease) {
-        return create(ease, RunType.FIRE_ONCE, Speed.MEDIUM);
+    public boolean destroy(Animation animation) {
+        return animations.remove(animation);
     }
 
     /**
-     * Creates an {@link Animation animation} with the given parameters.
+     * Inserts the given animation to the animation queue.
      *
-     * @param ease  the ease of the animation
-     * @param type  the type of this animation
-     * @param speed the speed of this animation
-     * @return the created animation
+     * @param animation the animation
+     * @return true if the insertion was successful, false otherwise
      */
-    public Animation create(Ease ease, RunType type, double speed) {
-        return create(ease, null, type, 0, speed);
-    }
-
-    /**
-     * Creates an {@link Animation animation} with the given parameters.
-     *
-     * @param ease         the ease of the animation
-     * @param backwardEase the ease of this animation when the animation is going backwards
-     * @param type         the type of this animation
-     * @param speed        the speed of this animation
-     * @return the created animation
-     */
-    public Animation create(Ease ease, Ease backwardEase, RunType type, double speed) {
-        return create(ease, backwardEase, type, 0, speed);
-    }
-
-    /**
-     * Creates an {@link Animation animation} with the given parameters.
-     *
-     * @param ease         the ease of the animation
-     * @param backwardEase the ease of this animation when the animation is going backwards
-     * @param type         the type of this animation
-     * @param startValue   the starting value of this animation
-     * @param speed        the speed of this animation
-     */
-    public Animation create(Ease ease, Ease backwardEase, RunType type, double startValue, double speed) {
-        return new Animation(this, ease, backwardEase, type, startValue, speed);
+    public boolean start(Animation animation) {
+        return animations.add(animation);
     }
 }
