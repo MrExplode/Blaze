@@ -30,33 +30,36 @@ dependencies {
 You can build the project by running `./gradlew build`
 
 ## Usage
-Create an `Animator` instance, and update it in every render loop
+Create an `Animator` instance, and update it in every render loop:
 ```java
 Animator animator = new Animator();
 
 //update in render loop
 animator.update(partialTicks);
 ```
-Create and use animations
+Creating and using animations:
 ```java
-Animation animation1 = animator.create(Ease.LINEAR);
-Animation animation2 = animator.create(Ease.SINE_IN_OUT, RunType.BOUNCE, Speed.MEDIUM);
+Animation animation1 = Animation.animation(Eases.LINEAR);
+Animation animation2 = Animation.animation(Eases.SINE_IN_OUT, AnimationType.bouncing(), 0.1);
 
-animation1.start();
+animator.start(animation1);
 
 //use animation value in render call
 //...
-double animValue = animation1.getValue();
+double animValue = animation1.value();
 //eg. translate the matrix
 GL11.glTranslate2d(x, y + animValue);
 //...
 ```
-You can also add a `Runnable` that runs at the end of the task
+
+Built-in animation types:
+
 ```java
-//add to an existing animation
-animation.onFinish(runnable);
-//add during creation
-Animation anim = animator.create(Ease.LINEAR).onFinish(runnable);
+AnimationType bouncing();
+AnimationType bouncing(Ease backwardEase);
+AnimationType once();
+AnimationType once(Runnable runnable);
+AnimationType loop(Ease backwardEase);
 ```
 
 ## License
