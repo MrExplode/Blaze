@@ -18,101 +18,163 @@
 
 package me.sunstorm.blaze;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents an animation.
  */
-@Getter
-@Setter(AccessLevel.PROTECTED)
-public class Animation {
-    @Getter(AccessLevel.NONE)
-    private final Animator animator;
-
-    private final Ease ease;
-    private final Ease backwardEase;
-    private final RunType runType;
-    private final double multiplier;
-
-    private Runnable onFinish;
-
-    private double value; //the animation value (0-1)
-    private double progress; // the progress (0-1)
-
-    private Direction direction = Direction.FORWARD;
-    private boolean running = false;
-
-    protected Animation(@NotNull Animator animator, @NotNull Ease ease, @Nullable Ease backwardEase, @NotNull RunType runType, double startValue, double multiplier) {
-        if (startValue < 0 || startValue > 1) {
-            throw new IllegalArgumentException("Invalid start value " + startValue);
-        }
-
-        this.animator = animator;
-        this.ease = ease;
-        this.backwardEase = backwardEase;
-        this.runType = runType;
-        this.progress = startValue;
-        this.value = startValue;
-        this.multiplier = multiplier;
-    }
+public interface Animation {
+    /**
+     * Returns the value of this animation.
+     *
+     * @return the value
+     */
+    double value();
 
     /**
-     * Sets the {@link Runnable} to be run when the animation completes.
-     * Only applicable when the {@link RunType} is {@link RunType#FIRE_ONCE}.
+     * Sets the value of this animation.
      *
-     * Note that this is ran on the thread where {@link Animator#update} is called.
+     * @param value the new value.
      */
-    public Animation onFinish(Runnable r) {
-        if (runType != RunType.FIRE_ONCE) {
-            throw new IllegalStateException("can't set onFinish while the animation's runType is not RunType.FIRE_ONCE");
-        }
-        this.onFinish = r;
-        return this;
-    }
+    void value(double value);
+
+    /**
+     * Returns the progress of this animation.
+     *
+     * @return the progress
+     */
+    double progress();
+
+    /**
+     * Sets the progress of this animation.
+     *
+     * @param value the new progress
+     */
+    void progress(double value);
+
+    /**
+     * Returns if the animation is currently paused.
+     *
+     * @return true if its paused, false otherwise
+     */
+    boolean paused();
+
+    /**
+     * Sets the pause state of this animation. While paused, the animation doesn't tick.
+     *
+     * @param state the new stack
+     */
+    void paused(boolean state);
 
     /**
      * Returns the remaining value of this animation.
      *
      * @return the remaining value
      */
-    public double getRemaining() {
-        return 1 - value;
+    default double remaining() {
+        return 1 - value();
     }
 
     /**
-     * Returns if the animation is going forward.
+     * Returns the speed of this animation.
      *
-     * @return true if the animation is going forward, false otherwise
+     * @return the speed
      */
-    public boolean isGoingForward() {
-        return direction == Direction.FORWARD;
+    default double speed() {
+        return 0.1;
     }
 
     /**
-     * Starts the animation.
-     */
-    public void start() {
-        animator.getAnimations().add(this);
-        running = true;
-    }
-
-    /**
-     * Stops the animation.
+     * Returns the type of this animation.
      *
-     * this doesn't reset the progress of this animation.
+     * @return the type
      */
-    public void stop() {
-        running = false;
+    @NotNull
+    default AnimationType type() {
+        return AnimationType.once();
     }
 
     /**
-     * Resets the progress of this animation.
+     * Returns the ease of this animation.
+     *
+     * @return the ease
      */
-    public void reset() {
-        progress = 0;
+    @NotNull
+    default Ease ease() {
+        return x -> x;
+    }
+
+    /**
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease the ease of the animation
+     * @return the created animation
+     */
+    @NotNull
+    static Animation animation(@NotNull Ease ease) {
+        return animation(ease, AnimationType.once(), 0.1);
+    }
+
+    /**
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease  the ease of the animation
+     * @param type  the type of this animation
+     * @param speed the speed of this animation
+     * @return the created animation
+     */
+    @NotNull
+    static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, double speed) {
+        return animation(ease, type, false, speed, 0, 0);
+    }
+
+    /**
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease  the ease of the animation
+     * @param type  the type of this animation
+     * @param speed the speed of this animation
+     * @param value the starting value of this animation
+     * @return the created animation
+     */
+    @NotNull
+    static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, double speed, double value) {
+        return animation(ease, type, false, speed, value, 0);
+    }
+
+    /**
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease     the ease of the animation
+     * @param type     the type of this animation
+     * @param paused   the pause state of this animation
+     * @param speed    the speed of this animation
+     * @param value    the starting value of this animation
+     * @param progress the starting progress of this animation
+     * @return the created animation
+     */
+    static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, boolean paused, double speed, double value, double progress) {
+        //@formatter:off
+        Animation animation = new Animation() {
+            double value, progress;
+            boolean paused;
+
+            @Override public double value() { return value; }
+            @Override public void value(double value) { this.value = value; }
+            @Override public double progress() { return progress; }
+            @Override public void progress(double progress) { this.progress = progress; }
+            @Override public boolean paused() { return paused; }
+            @Override public void paused(boolean paused) { this.paused = paused; }
+            @Override public double speed() { return speed; }
+            @Override @NotNull public AnimationType type() { return type; }
+            @Override @NotNull public Ease ease() { return ease; }
+        };
+        //@formatter:on
+
+        animation.paused(paused);
+        animation.value(value);
+        animation.progress(progress);
+
+        return animation;
     }
 }
