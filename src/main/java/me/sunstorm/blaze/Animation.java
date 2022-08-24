@@ -35,8 +35,10 @@ public interface Animation {
      * Sets the value of this animation.
      *
      * @param value the new value.
+     * @return this animation
      */
-    void value(double value);
+    @NotNull
+    Animation value(double value);
 
     /**
      * Returns the progress of this animation.
@@ -49,8 +51,10 @@ public interface Animation {
      * Sets the progress of this animation.
      *
      * @param value the new progress
+     * @return this animation
      */
-    void progress(double value);
+    @NotNull
+    Animation progress(double value);
 
     /**
      * Returns if the animation is currently paused.
@@ -63,8 +67,10 @@ public interface Animation {
      * Sets the pause state of this animation. While paused, the animation doesn't tick.
      *
      * @param state the new stack
+     * @return this animation
      */
-    void paused(boolean state);
+    @NotNull
+    Animation paused(boolean state);
 
     /**
      * Returns the remaining value of this animation.
@@ -112,7 +118,19 @@ public interface Animation {
      */
     @NotNull
     static Animation animation(@NotNull Ease ease) {
-        return animation(ease, AnimationType.once(), 0.1);
+        return animation(ease, 0.1);
+    }
+
+    /**
+     * Creates an {@link Animation animation} with the given parameters.
+     *
+     * @param ease the ease of the animation
+     * @param speed the speed of the animation
+     * @return the created animation
+     */
+    @NotNull
+    static Animation animation(@NotNull Ease ease, double speed) {
+        return animation(ease, AnimationType.once(), speed);
     }
 
     /**
@@ -125,7 +143,7 @@ public interface Animation {
      */
     @NotNull
     static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, double speed) {
-        return animation(ease, type, false, speed, 0, 0);
+        return animation(ease, type, false, speed, 0);
     }
 
     /**
@@ -134,12 +152,12 @@ public interface Animation {
      * @param ease  the ease of the animation
      * @param type  the type of this animation
      * @param speed the speed of this animation
-     * @param value the starting value of this animation
+     * @param progress the progress value of this animation
      * @return the created animation
      */
     @NotNull
-    static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, double speed, double value) {
-        return animation(ease, type, false, speed, value, 0);
+    static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, double speed, double progress) {
+        return animation(ease, type, false, speed, progress);
     }
 
     /**
@@ -149,32 +167,25 @@ public interface Animation {
      * @param type     the type of this animation
      * @param paused   the pause state of this animation
      * @param speed    the speed of this animation
-     * @param value    the starting value of this animation
      * @param progress the starting progress of this animation
      * @return the created animation
      */
-    static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, boolean paused, double speed, double value, double progress) {
+    static Animation animation(@NotNull Ease ease, @NotNull AnimationType type, boolean paused, double speed, double progress) {
         //@formatter:off
-        Animation animation = new Animation() {
+        return new Animation() {
             double value, progress;
             boolean paused;
 
             @Override public double value() { return value; }
-            @Override public void value(double value) { this.value = value; }
+            @Override @NotNull public Animation value(double value) { this.value = value; return this; }
             @Override public double progress() { return progress; }
-            @Override public void progress(double progress) { this.progress = progress; }
+            @Override @NotNull public Animation progress(double progress) { this.progress = progress; return value(type.getValue(this)); }
             @Override public boolean paused() { return paused; }
-            @Override public void paused(boolean paused) { this.paused = paused; }
+            @Override @NotNull public Animation paused(boolean paused) { this.paused = paused; return this; }
             @Override public double speed() { return speed; }
             @Override @NotNull public AnimationType type() { return type; }
             @Override @NotNull public Ease ease() { return ease; }
-        };
+        }.paused(paused).progress(progress);
         //@formatter:on
-
-        animation.paused(paused);
-        animation.value(value);
-        animation.progress(progress);
-
-        return animation;
     }
 }
