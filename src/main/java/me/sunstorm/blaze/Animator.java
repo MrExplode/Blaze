@@ -18,6 +18,8 @@
 
 package me.sunstorm.blaze;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,7 +59,7 @@ public class Animator {
      * @param animation the animation
      * @return true if the removal was successful, false otherwise
      */
-    public boolean destroy(Animation animation) {
+    public boolean destroy(@NotNull Animation animation) {
         return animations.remove(animation);
     }
 
@@ -67,7 +69,7 @@ public class Animator {
      * @param animation the animation
      * @return true if the insertion was successful, false otherwise
      */
-    public boolean start(Animation animation) {
+    public boolean start(@NotNull Animation animation) {
         return animations.add(animation);
     }
 }

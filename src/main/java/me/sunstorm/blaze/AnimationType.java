@@ -20,6 +20,7 @@ package me.sunstorm.blaze;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -31,7 +32,7 @@ public interface AnimationType {
      *
      * @param animation the animation
      */
-    boolean tick(Animation animation);
+    boolean tick(@NotNull Animation animation);
 
     /**
      * Returns the new progress for the given animation.
@@ -39,7 +40,7 @@ public interface AnimationType {
      * @param animation the animation
      * @return the new progress
      */
-    default double getProgress(Animation animation, float partialTicks) {
+    default double getProgress(@NotNull Animation animation, float partialTicks) {
         return Math.min(1, animation.progress() + partialTicks * animation.speed());
     }
 
@@ -49,7 +50,7 @@ public interface AnimationType {
      * @param animation the animation
      * @return the new value
      */
-    default double getValue(Animation animation) {
+    default double getValue(@NotNull Animation animation) {
         return animation.ease().apply(animation.progress());
     }
 
@@ -58,6 +59,7 @@ public interface AnimationType {
      *
      * @return the bouncing animation type instance
      */
+    @NotNull
     static AnimationType bouncing() {
         return Bouncing.INSTANCE;
     }
@@ -67,7 +69,8 @@ public interface AnimationType {
      *
      * @return the bouncing animation type instance
      */
-    static AnimationType bouncing(Ease backwardEase) {
+    @NotNull
+    static AnimationType bouncing(@NotNull Ease backwardEase) {
         Bouncing bounce = new Bouncing();
         bounce.backwardEase = backwardEase;
         return bounce;
@@ -78,6 +81,7 @@ public interface AnimationType {
      *
      * @return a new once animation type instance
      */
+    @NotNull
     static AnimationType once() {
         return Once.INSTANCE;
     }
@@ -88,6 +92,7 @@ public interface AnimationType {
      * @param runnable the task what will run after the animation finished
      * @return a new once instance
      */
+    @NotNull
     static AnimationType once(@Nullable Runnable runnable) {
         Once once = new Once();
         once.finishTask = runnable;
@@ -99,6 +104,7 @@ public interface AnimationType {
      *
      * @return the loop animation type instance
      */
+    @NotNull
     static AnimationType loop() {
         return Loop.INSTANCE;
     }
@@ -124,7 +130,7 @@ public interface AnimationType {
         }
 
         @Override
-        public double getProgress(Animation animation, float partialTicks) {
+        public double getProgress(@NotNull Animation animation, float partialTicks) {
             if (goingForward) {
                 return AnimationType.super.getProgress(animation, partialTicks);
             } else {
@@ -133,7 +139,7 @@ public interface AnimationType {
         }
 
         @Override
-        public double getValue(Animation animation) {
+        public double getValue(@NotNull Animation animation) {
             Ease selectedEase = animation.ease();
 
             if (backwardEase != null && !goingForward) {

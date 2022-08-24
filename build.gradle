@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'me.sunstorm'
-version '1.0.1-SNAPSHOT'
+version '2.1.0'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
